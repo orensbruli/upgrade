@@ -797,7 +797,11 @@ impl Daemon {
         let mut shutdown_triggered = false;
 
         loop {
-            let _ = connection.process(std::time::Duration::from_millis(500));
+            if connection.process(std::time::Duration::from_millis(500)).is_err() {
+                warn!("dbus connection error, retrying in 5s");
+                std::thread::sleep(std::time::Duration::from_secs(5));
+                continue;
+            }
             let mut lock = cr.lock().unwrap();
             let daemon: &mut Daemon = lock.data_mut(&path).unwrap();
 
