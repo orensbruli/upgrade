@@ -799,7 +799,7 @@ impl Daemon {
         loop {
             if connection.process(std::time::Duration::from_millis(500)).is_err() {
                 warn!("dbus connection error, retrying in 5s");
-                std::thread::sleep(std::time::Duration::from_secs(5));
+                tokio::time::sleep(std::time::Duration::from_secs(5)).await;
                 continue;
             }
             let mut lock = cr.lock().unwrap();
